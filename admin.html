@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>لوحة التحكم - معهد القرآن الكريم</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+    body {
+        font-family: 'Tajawal', Arial, sans-serif;
+        background: #f5f5f5;
+        margin: 0;
+        padding: 0;
+        direction: rtl;
+    }
+    header {
+        background: #2c786c;
+        color: white;
+        padding: 15px;
+        text-align: center;
+        font-size: 1.4rem;
+    }
+    .container {
+        max-width: 1100px;
+        margin: auto;
+        padding: 20px;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 15px;
+    }
+    th, td {
+        padding: 10px;
+        border-bottom: 1px solid #ddd;
+        text-align: center;
+    }
+    th {
+        background: #faf5e4;
+        color: #004445;
+    }
+    tr:hover {
+        background: rgba(44, 120, 108, 0.05);
+    }
+    .btn {
+        padding: 6px 12px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-size: 0.9rem;
+    }
+    .btn-edit { background: #17a2b8; color: white; }
+    .btn-delete { background: #dc3545; color: white; }
+    .btn-add { background: #28a745; color: white; margin-top: 10px; }
+    input, select {
+        padding: 6px;
+        width: 100%;
+        margin-bottom: 10px;
+        border: 1px solid #ddd;
+        border-radius: 6px;
+    }
+    .search-box {
+        margin-bottom: 10px;
+    }
+</style>
+</head>
+<body>
+
+<header>لوحة التحكم - معهد القرآن الكريم</header>
+<div class="container">
+
+    <input type="text" id="search" class="search-box" placeholder="🔍 ابحث عن طالب بالاسم أو رقم ID">
+
+    <table>
+        <thead>
+            <tr>
+                <th>رقم ID</th>
+                <th>الاسم</th>
+                <th>المستوى</th>
+                <th>التقدم</th>
+                <th>الإجراءات</th>
+            </tr>
+        </thead>
+        <tbody id="studentsTable"></tbody>
+    </table>
+
+    <h3>➕ إضافة / تعديل طالب</h3>
+    <form id="studentForm">
+        <input type="hidden" id="studentIndex">
+        <input type="text" id="id" placeholder="رقم الطالب ID" required>
+        <input type="text" id="name" placeholder="اسم الطالب" required>
+        <input type="text" id="image" placeholder="رابط الصورة">
+        <select id="level">
+            <option value="مبتدئ">مبتدئ</option>
+            <option value="متوسط">متوسط</option>
+            <option value="متقدم">متقدم</option>
+        </select>
+        <input type="number" id="progress" placeholder="التقدم %" min="0" max="100">
+        <button type="submit" class="btn btn-add">💾 حفظ</button>
+    </form>
+
+</div>
+
+<script>
+let students = [];
+
+async function fetchData() {
+    const res = await fetch('data.json');
+    students = await res.json();
+    students = students.students;
+    renderTable(students);
+}
+
+function renderTable(data) {
+    const tbody = document.getElementById('studentsTable');
+    tbody.innerHTML = '';
+    data.forEach((student, index) => {
+        tbody.innerHTML += `
+            <tr>
+                <td>${student.id}</td>
+                <td>${student.name}</td>
+                <td>${student.level}</td>
+                <td>${student.progress}%</td>
+                <td>
+                    <button class="btn btn-edit" onclick="editStudent(${index})">تعديل</button>
+                    <button class="btn btn-delete" onclick="deleteStudent(${index})">حذف</button>
+                </td>
+            </tr>
+        `;
+    });
+}
+
+function editStudent(index) {
+    document.getElementById('studentIndex').value = index;
+    document.getElementById('id').value = students[index].id;
+    document.getElementById('name').value = students[index].name;
+    document.getElementById('image').value = students[index].image;
+    document.getElementById('level').value = students[index].level;
+    document.getElementById('progress').value = students[index].progress;
+}
+
+function deleteStudent(index) {
+    if (confirm('هل تريد حذف هذا الطالب؟')) {
+        students.splice(index, 1);
+        renderTable(students);
+    }
+}
+
+document.getElementById('studentForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const index = document.getElementById('studentIndex').value;
+    const newStudent = {
+        id: document.getElementById('id').value,
+        name: document.getElementById('name').value,
+        image: document.getElementById('image').value || 'https://via.placeholder.com/150',
+        level: document.getElementById('level').value,
+        progress: parseInt(document.getElementById('progress').value) || 0,
+        quranTests: [],
+        tajweedTests: [],
+        lessonTests: []
+    };
+
+    if (index) {
+        students[index] = newStudent;
+    } else {
+        students.push(newStudent);
+    }
+    renderTable(students);
+    this.reset();
+    document.getElementById('studentIndex').value = '';
+});
+
+document.getElementById('search').addEventListener('input', function() {
+    const value = this.value.toLowerCase();
+    const filtered = students.filter(s => 
+        s.name.toLowerCase().includes(value) || 
+        s.id.toLowerCase().includes(value)
+    );
+    renderTable(filtered);
+});
+
+fetchData();
+</script>
+
+</body>
+</html>
