@@ -35,6 +35,183 @@
             <p>جميع الحقوق محفوظة &copy; معهد القرآن الكريم 2023</p>
         </footer>
     </div>
-    <script src="script.js"></script>
+    <script>
+        // ========== المتغيرات العامة ==========
+let studentsData = { students: [] };
+
+// ========== تسجيل الدخول ==========
+document.getElementById("loginForm")?.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const studentId = document.getElementById("studentId").value;
+    const errorElement = document.getElementById("error");
+    
+    try {
+        // جلب بيانات الطلاب من ملف JSON
+        const data = await fetchStudentData();
+        const student = data.students.find(s => s.id === studentId);
+        
+        if (student) {
+            localStorage.setItem("studentId", studentId);
+            window.location.href = "profile.html";
+        } else {
+            showError(errorElement, "رقم الطالب غير صحيح!");
+        }
+    } catch (error) {
+        console.error("Error:", error);
+        showError(errorElement, "حدث خطأ في جلب البيانات. حاول مرة أخرى لاحقاً.");
+    }
+});
+
+// ========== صفحة الملف الشخصي ==========
+if (window.location.pathname.includes("profile.html")) {
+    document.addEventListener("DOMContentLoaded", async () => {
+        const studentId = localStorage.getItem("studentId");
+        if (!studentId) {
+            redirectToLogin();
+            return;
+        }
+
+        try {
+            const data = await fetchStudentData();
+            const student = data.students.find(s => s.id === studentId);
+            
+            if (student) {
+                displayStudentProfile(student);
+                setupTabs();
+            } else {
+                redirectToLogin();
+            }
+        } catch (error) {
+            console.error("Error:", error);
+            redirectToLogin();
+        }
+    });
+}
+
+// ========== الدوال المساعدة ==========
+async function fetchStudentData() {
+    const response = await fetch('data.json');
+    if (!response.ok) {
+        throw new Error('Failed to fetch data');
+    }
+    return await response.json();
+}
+
+function displayStudentProfile(student) {
+    // البيانات الأساسية
+    document.getElementById("studentName").textContent = student.name;
+    document.getElementById("studentImage").src = student.image;
+    document.getElementById("studentImage").alt = `صورة ${student.name}`;
+    document.getElementById("studentLevel").textContent = student.level;
+
+    // شريط التقدم
+    const progressBar = document.querySelector(".progress-bar");
+    const progressText = document.getElementById("progressText");
+    progressBar.style.width = `${student.progress}%`;
+    progressText.textContent = `${student.progress}%`;
+
+    // تعبئة الجداول
+    fillTable("quranTests", student.quranTests, (item) => {
+        return `
+            <td>${item.part}</td>
+            <td><span class="score-badge ${getScoreClass(item.memorization)}">${item.memorization}</span></td>
+            <td><span class="score-badge ${getScoreClass(item.recitation)}">${item.recitation}</span></td>
+            <td>${item.date}</td>
+            <td><button class="btn-details" data-details='${JSON.stringify(item.details)}'>عرض التفاصيل</button></td>
+        `;
+    });
+
+    fillTable("tajweedTests", student.tajweedTests, (item) => {
+        return `
+            <td>${item.test}</td>
+            <td><span class="score-badge ${getScoreClass(item.result)}">${item.result}</span></td>
+            <td>${item.evaluation}</td>
+            <td>${item.date}</td>
+        `;
+    });
+
+    fillTable("lessonTests", student.lessonTests, (item) => {
+        return `
+            <td>${item.lesson}</td>
+            <td><span class="score-badge ${getScoreClass(item.result)}">${item.result}</span></td>
+            <td>${item.evaluation}</td>
+            <td>${item.date}</td>
+        `;
+    });
+
+    // إضافة أحداث لأزرار التفاصيل
+    setupDetailsButtons();
+}
+
+function fillTable(tableId, data, rowTemplate) {
+    const tableBody = document.getElementById(tableId);
+    tableBody.innerHTML = "";
+
+    if (!data || data.length === 0) {
+        const row = document.createElement("tr");
+        const colCount = tableBody.closest("table").querySelector("tr").children.length;
+        row.innerHTML = `<td colspan="${colCount}" style="text-align:center">لا توجد بيانات متاحة</td>`;
+        tableBody.appendChild(row);
+        return;
+    }
+
+    data.forEach(item => {
+        const row = document.createElement("tr");
+        row.innerHTML = rowTemplate(item);
+        tableBody.appendChild(row);
+    });
+}
+
+function getScoreClass(score) {
+    const percent = parseInt(score);
+    if (percent >= 90) return "excellent";
+    if (percent >= 80) return "very-good";
+    if (percent >= 70) return "good";
+    return "weak";
+}
+
+function setupTabs() {
+    const tabBtns = document.querySelectorAll(".tab-btn");
+    const tabContents = document.querySelectorAll(".tab-content");
+
+    tabBtns.forEach(btn => {
+        btn.addEventListener("click", () => {
+            tabBtns.forEach(b => b.classList.remove("active"));
+            tabContents.forEach(c => c.classList.remove("active"));
+            
+            btn.classList.add("active");
+            const tabId = btn.getAttribute("data-tab");
+            document.getElementById(tabId).classList.add("active");
+        });
+    });
+}
+
+function setupDetailsButtons() {
+    document.querySelectorAll(".btn-details").forEach(btn => {
+        btn.addEventListener("click", function() {
+            const details = JSON.parse(this.getAttribute("data-details"));
+            showDetailsModal(details);
+        });
+    });
+}
+
+function showDetailsModal(details) {
+    // يمكنك تنفيذ عرض تفاصيل إضافية في مودال
+    console.log("تفاصيل الأداء:", details);
+    alert(`ملاحظات المعلم:\n${details.notes || "لا توجد ملاحظات"}`);
+}
+
+function showError(element, message) {
+    element.textContent = message;
+    element.style.display = "block";
+    setTimeout(() => {
+        element.style.display = "none";
+    }, 3000);
+}
+
+function redirectToLogin() {
+    window.location.href = "index.html";
+}
+    </script>
 </body>
 </html>
