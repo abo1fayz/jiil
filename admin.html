@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>معهد القرآن الكريم - لوحة التحكم</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* تنسيقات إضافية خاصة بصفحة الإدارة */
+        .admin-header {
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 15px 0;
+            margin-bottom: 30px;
+        }
+        
+        .admin-nav {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .admin-nav a {
+            color: white;
+            text-decoration: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+        
+        .admin-nav a:hover, .admin-nav a.active {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+        
+        .admin-section {
+            display: none;
+        }
+        
+        .admin-section.active {
+            display: block;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        
+        .card h3 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        
+        .stat-card i {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+        
+        .stat-card h4 {
+            color: var(--secondary-color);
+            margin-bottom: 5px;
+        }
+        
+        .stat-card p {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--dark-color);
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: white;
+        }
+        
+        .actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn-sm {
+            padding: 5px 10px;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="admin-header">
+            <div class="logo">
+                <i class="fas fa-user-shield"></i>
+                <h1>لوحة تحكم المعهد</h1>
+            </div>
+            <nav class="admin-nav">
+                <a href="#" class="active" data-section="dashboard"><i class="fas fa-tachometer-alt"></i> لوحة التحكم</a>
+                <a href="#" data-section="students"><i class="fas fa-users"></i> الطلاب</a>
+                <a href="#" data-section="tests"><i class="fas fa-clipboard-check"></i> الاختبارات</a>
+                <a href="#" data-section="reports"><i class="fas fa-chart-bar"></i> التقارير</a>
+                <a href="#" class="logout" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> تسجيل الخروج</a>
+            </nav>
+        </header>
+        
+        <!-- قسم لوحة التحكم -->
+        <section id="dashboard" class="admin-section active">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <i class="fas fa-users"></i>
+                    <h4>عدد الطلاب</h4>
+                    <p id="totalStudents">0</p>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-graduation-cap"></i>
+                    <h4>طلاب المستوى المتقدم</h4>
+                    <p id="advancedStudents">0</p>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-quran"></i>
+                    <h4>اختبارات هذا الشهر</h4>
+                    <p id="monthlyTests">0</p>
+                </div>
+                <div class="stat-card">
+                    <i class="fas fa-percentage"></i>
+                    <h4>متوسط التقدم</h4>
+                    <p id="avgProgress">0%</p>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h3><i class="fas fa-bell"></i> الإشعارات الحديثة</h3>
+                <div id="recentNotifications">
+                    <p>لا توجد إشعارات حديثة</p>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h3><i class="fas fa-chart-line"></i> إحصائيات سريعة</h3>
+                <div id="quickStats">
+                    <!-- سيتم ملؤها بالبيانات عبر الجافاسكربت -->
+                </div>
+            </div>
+        </section>
+        
+        <!-- قسم إدارة الطلاب -->
+        <section id="students" class="admin-section">
+            <div class="card">
+                <h3><i class="fas fa-user-plus"></i> إضافة طالب جديد</h3>
+                <form id="addStudentForm">
+                    <div class="form-group">
+                        <label for="studentName">اسم الطالب</label>
+                        <input type="text" id="studentName" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="studentId">رقم الطالب السري</label>
+                        <input type="text" id="studentId" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="studentLevel">المستوى</label>
+                        <select id="studentLevel" class="form-control" required>
+                            <option value="مبتدئ">مبتدئ</option>
+                            <option value="متوسط">متوسط</option>
+                            <option value="متقدم">متقدم</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="studentImage">رابط الصورة</label>
+                        <input type="text" id="studentImage" class="form-control" placeholder="https://example.com/image.jpg">
+                    </div>
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> حفظ</button>
+                </form>
+            </div>
+            
+            <div class="card">
+                <h3><i class="fas fa-users"></i> قائمة الطلاب</h3>
+                <div class="table-responsive">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>الصورة</th>
+                                <th>اسم الطالب</th>
+                                <th>رقم الطالب</th>
+                                <th>المستوى</th>
+                                <th>التقدم</th>
+                                <th>الإجراءات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="studentsList">
+                            <!-- سيتم ملؤها بالبيانات عبر الجافاسكربت -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+        
+        <!-- قسم إدارة الاختبارات -->
+        <section id="tests" class="admin-section">
+            <div class="card">
+                <h3><i class="fas fa-clipboard-list"></i> إضافة اختبار جديد</h3>
+                <form id="addTestForm">
+                    <div class="form-group">
+                        <label for="testType">نوع الاختبار</label>
+                        <select id="testType" class="form-control" required>
+                            <option value="quran">اختبار حفظ القرآن</option>
+                            <option value="tajweed">اختبار التجويد</option>
+                            <option value="lesson">اختبار الدرس</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="testDetailsContainer">
+                        <!-- سيتم ملؤها ديناميكياً بناءً على نوع الاختبار -->
+                    </div>
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> حفظ</button>
+                </form>
+            </div>
+            
+            <div class="card">
+                <h3><i class="fas fa-list"></i> قائمة الاختبارات</h3>
+                <div class="tabs">
+                    <button class="tab-btn active" data-tab="quranTestsTab">اختبارات القرآن</button>
+                    <button class="tab-btn" data-tab="tajweedTestsTab">اختبارات التجويد</button>
+                    <button class="tab-btn" data-tab="lessonTestsTab">اختبارات الدروس</button>
+                </div>
+                
+                <div class="tab-content active" id="quranTestsTab">
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>الجزء</th>
+                                    <th>الحفظ</th>
+                                    <th>التلاوة</th>
+                                    <th>التاريخ</th>
+                                    <th>الطالب</th>
+                                    <th>الإجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody id="quranTestsList">
+                                <!-- سيتم ملؤها بالبيانات عبر الجافاسكربت -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div class="tab-content" id="tajweedTestsTab">
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>الاختبار</th>
+                                    <th>النتيجة</th>
+                                    <th>التقييم</th>
+                                    <th>التاريخ</th>
+                                    <th>الطالب</th>
+                                    <th>الإجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tajweedTestsList">
+                                <!-- سيتم ملؤها بالبيانات عبر الجافاسكربت -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div class="tab-content" id="lessonTestsTab">
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>الدرس</th>
+                                    <th>النتيجة</th>
+                                    <th>التقييم</th>
+                                    <th>التاريخ</th>
+                                    <th>الطالب</th>
+                                    <th>الإجراءات</th>
+                                </tr>
+                            </thead>
+                            <tbody id="lessonTestsList">
+                                <!-- سيتم ملؤها بالبيانات عبر الجافاسكربت -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- قسم التقارير -->
+        <section id="reports" class="admin-section">
+            <div class="card">
+                <h3><i class="fas fa-chart-pie"></i> تقارير الطلاب</h3>
+                <div class="form-group">
+                    <label for="reportStudent">اختر الطالب</label>
+                    <select id="reportStudent" class="form-control">
+                        <option value="">جميع الطلاب</option>
+                        <!-- سيتم ملؤها بالبيانات عبر الجافاسكربت -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="reportType">نوع التقرير</label>
+                    <select id="reportType" class="form-control">
+                        <option value="progress">تقرير التقدم</option>
+                        <option value="tests">تقرير الاختبارات</option>
+                        <option value="performance">تقرير الأداء</option>
+                    </select>
+                </div>
+                <button id="generateReport" class="btn btn-primary"><i class="fas fa-file-pdf"></i> إنشاء التقرير</button>
+                
+                <div id="reportPreview" class="mt-4">
+                    <!-- سيتم عرض معاينة التقرير هنا -->
+                </div>
+            </div>
+            
+            <div class="card">
+                <h3><i class="fas fa-chart-bar"></i> إحصائيات عامة</h3>
+                <div id="generalStatsCharts">
+                    <!-- سيتم عرض الرسوم البيانية هنا -->
+                </div>
+            </div>
+        </section>
+    </div>
+    
+    <script src="admin.js"></script>
+</body>
+</html>
