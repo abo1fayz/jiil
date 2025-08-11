@@ -5,7 +5,349 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>معهد القرآن الكريم - تسجيل الدخول</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
+    <style>
+        :root {
+    --primary-color: #2c786c;
+    --secondary-color: #004445;
+    --accent-color: #f8b400;
+    --light-color: #faf5e4;
+    --dark-color: #333;
+    --success-color: #28a745;
+    --danger-color: #dc3545;
+    --warning-color: #ffc107;
+    --info-color: #17a2b8;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Tajawal', Arial, sans-serif;
+    background-color: #f5f5f5;
+    color: var(--dark-color);
+    direction: rtl;
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Header & Logo */
+header {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 15px 0;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.logo i {
+    font-size: 2rem;
+    color: var(--light-color);
+}
+
+.logo h1 {
+    margin: 0;
+    font-size: 1.8rem;
+    color: white;
+}
+
+/* Login Page */
+.login-box {
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 0 20px rgba(0,0,0,0.1);
+    margin: 50px auto;
+    max-width: 500px;
+}
+
+.login-box h2 {
+    color: var(--primary-color);
+    margin-bottom: 25px;
+    text-align: center;
+    font-size: 1.5rem;
+}
+
+.input-group {
+    position: relative;
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--dark-color);
+    font-weight: 500;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 12px 40px 12px 15px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: all 0.3s;
+}
+
+.input-group input:focus {
+    border-color: var(--primary-color);
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(44, 120, 108, 0.2);
+}
+
+.input-group i {
+    position: absolute;
+    left: 15px;
+    top: 38px;
+    color: #777;
+}
+
+button {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 6px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+button:hover {
+    background-color: var(--secondary-color);
+}
+
+.error-message {
+    color: var(--danger-color);
+    text-align: center;
+    margin-top: 15px;
+    display: none;
+}
+
+/* Profile Page */
+.profile-header {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+    margin: 20px 0;
+    box-shadow: 0 0 15px rgba(0,0,0,0.05);
+}
+
+.profile-image {
+    position: relative;
+    text-align: center;
+}
+
+.profile-image img {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 5px solid var(--light-color);
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+.profile-level {
+    background: var(--accent-color);
+    color: white;
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-weight: bold;
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.9rem;
+}
+
+.profile-info {
+    flex: 1;
+}
+
+.profile-info h2 {
+    color: var(--secondary-color);
+    margin-bottom: 15px;
+    font-size: 1.8rem;
+}
+
+.progress-container {
+    margin-top: 20px;
+    position: relative;
+}
+
+.progress-bar {
+    height: 10px;
+    background: #e0e0e0;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.progress-bar::after {
+    content: '';
+    display: block;
+    height: 100%;
+    background: var(--primary-color);
+    border-radius: 5px;
+    width: 0;
+    transition: width 1s ease-in-out;
+}
+
+.progress-text {
+    position: absolute;
+    top: -25px;
+    left: 0;
+    font-weight: bold;
+    color: var(--primary-color);
+}
+
+/* Tabs */
+.tabs {
+    display: flex;
+    gap: 10px;
+    margin: 30px 0 20px;
+    border-bottom: 1px solid #ddd;
+}
+
+.tab-btn {
+    background: none;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    color: var(--dark-color);
+    position: relative;
+    font-weight: 500;
+}
+
+.tab-btn.active {
+    color: var(--primary-color);
+}
+
+.tab-btn.active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    right: 0;
+    width: 100%;
+    height: 3px;
+    background: var(--primary-color);
+}
+
+.tab-content {
+    display: none;
+    background: white;
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.05);
+    margin-bottom: 30px;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+.tab-content h3 {
+    color: var(--primary-color);
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* Tables */
+.table-responsive {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+th, td {
+    padding: 12px 15px;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background-color: var(--light-color);
+    color: var(--secondary-color);
+    font-weight: 600;
+}
+
+tr:hover {
+    background-color: rgba(44, 120, 108, 0.05);
+}
+
+/* Footer */
+footer {
+    background-color: var(--secondary-color);
+    color: white;
+    text-align: center;
+    padding: 20px 0;
+    margin-top: 50px;
+}
+
+footer p {
+    margin: 0;
+}
+
+/* Buttons */
+.btn {
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: all 0.3s;
+}
+
+.logout {
+    background-color: var(--danger-color);
+    display: block;
+    margin: 30px auto 0;
+}
+
+.logout:hover {
+    background-color: #c82333;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .profile-header {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .tabs {
+        overflow-x: auto;
+        padding-bottom: 10px;
+    }
+    
+    .tab-btn {
+        white-space: nowrap;
+    }
+}
+    </style>
+    
 </head>
 <body>
 
