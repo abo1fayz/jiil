@@ -5,22 +5,70 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>معهد القرآن الكريم - لوحة التحكم</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
     <style>
-        /* تنسيقات إضافية خاصة بصفحة الإدارة */
+        :root {
+            --primary-color: #2c786c;
+            --secondary-color: #004445;
+            --accent-color: #f8b400;
+            --light-color: #faf5e4;
+            --dark-color: #333;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --warning-color: #ffc107;
+            --info-color: #17a2b8;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Tajawal', Arial, sans-serif;
+            background-color: #f5f5f5;
+            color: var(--dark-color);
+            direction: rtl;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header & Logo */
         .admin-header {
             background-color: var(--secondary-color);
             color: white;
             padding: 15px 0;
             margin-bottom: 30px;
         }
-        
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .logo i {
+            font-size: 2rem;
+            color: var(--light-color);
+        }
+
+        .logo h1 {
+            margin: 0;
+            font-size: 1.8rem;
+            color: white;
+        }
+
         .admin-nav {
             display: flex;
             gap: 15px;
             margin-top: 20px;
         }
-        
+
         .admin-nav a {
             color: white;
             text-decoration: none;
@@ -28,19 +76,21 @@
             border-radius: 4px;
             transition: background-color 0.3s;
         }
-        
+
         .admin-nav a:hover, .admin-nav a.active {
             background-color: rgba(255, 255, 255, 0.2);
         }
-        
+
+        /* Sections */
         .admin-section {
             display: none;
         }
-        
+
         .admin-section.active {
             display: block;
         }
-        
+
+        /* Cards */
         .card {
             background: white;
             border-radius: 8px;
@@ -48,21 +98,25 @@
             margin-bottom: 20px;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
         }
-        
+
         .card h3 {
             color: var(--primary-color);
             margin-bottom: 15px;
             border-bottom: 1px solid #eee;
             padding-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
-        
+
+        /* Stats Grid */
         .stats-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
             gap: 20px;
             margin-bottom: 30px;
         }
-        
+
         .stat-card {
             background: white;
             border-radius: 8px;
@@ -70,34 +124,35 @@
             text-align: center;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
         }
-        
+
         .stat-card i {
             font-size: 2rem;
             color: var(--primary-color);
             margin-bottom: 10px;
         }
-        
+
         .stat-card h4 {
             color: var(--secondary-color);
             margin-bottom: 5px;
         }
-        
+
         .stat-card p {
             font-size: 1.5rem;
             font-weight: bold;
             color: var(--dark-color);
         }
-        
+
+        /* Forms */
         .form-group {
             margin-bottom: 15px;
         }
-        
+
         .form-group label {
             display: block;
             margin-bottom: 8px;
             font-weight: 500;
         }
-        
+
         .form-control {
             width: 100%;
             padding: 10px;
@@ -105,25 +160,155 @@
             border-radius: 4px;
             font-size: 1rem;
         }
-        
+
+        /* Buttons */
+        .btn {
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: all 0.3s;
+            cursor: pointer;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
         .btn-primary {
             background-color: var(--primary-color);
             color: white;
         }
-        
+
         .btn-danger {
             background-color: var(--danger-color);
             color: white;
         }
-        
-        .actions {
-            display: flex;
-            gap: 10px;
-        }
-        
+
         .btn-sm {
             padding: 5px 10px;
             font-size: 0.9rem;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
+        }
+
+        /* Tables */
+        .table-responsive {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: var(--light-color);
+            color: var(--secondary-color);
+            font-weight: 600;
+        }
+
+        tr:hover {
+            background-color: rgba(44, 120, 108, 0.05);
+        }
+
+        /* Score Badges */
+        .score-badge {
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .excellent {
+            background-color: var(--success-color);
+        }
+
+        .very-good {
+            background-color: #5cb85c;
+        }
+
+        .good {
+            background-color: var(--info-color);
+        }
+
+        .weak {
+            background-color: var(--danger-color);
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin: 30px 0 20px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .tab-btn {
+            background: none;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            color: var(--dark-color);
+            position: relative;
+            font-weight: 500;
+        }
+
+        .tab-btn.active {
+            color: var(--primary-color);
+        }
+
+        .tab-btn.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            right: 0;
+            width: 100%;
+            height: 3px;
+            background: var(--primary-color);
+        }
+
+        .tab-content {
+            display: none;
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .admin-nav {
+                overflow-x: auto;
+                padding-bottom: 10px;
+            }
+            
+            .admin-nav a {
+                white-space: nowrap;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -172,13 +357,6 @@
                 <h3><i class="fas fa-bell"></i> الإشعارات الحديثة</h3>
                 <div id="recentNotifications">
                     <p>لا توجد إشعارات حديثة</p>
-                </div>
-            </div>
-            
-            <div class="card">
-                <h3><i class="fas fa-chart-line"></i> إحصائيات سريعة</h3>
-                <div id="quickStats">
-                    <!-- سيتم ملؤها بالبيانات عبر الجافاسكربت -->
                 </div>
             </div>
         </section>
@@ -350,16 +528,451 @@
                     <!-- سيتم عرض معاينة التقرير هنا -->
                 </div>
             </div>
-            
-            <div class="card">
-                <h3><i class="fas fa-chart-bar"></i> إحصائيات عامة</h3>
-                <div id="generalStatsCharts">
-                    <!-- سيتم عرض الرسوم البيانية هنا -->
-                </div>
-            </div>
         </section>
     </div>
     
-    <script src="admin.js"></script>
+    <script>
+        // ========== تهيئة الصفحة ==========
+        document.addEventListener("DOMContentLoaded", function() {
+            // تحميل البيانات عند بدء التشغيل
+            loadAdminData();
+            
+            // إعداد التنقل بين الأقسام
+            setupAdminNavigation();
+            
+            // إعداد النماذج
+            setupAdminForms();
+            
+            // إعداد الأزرار
+            document.getElementById("logoutBtn").addEventListener("click", logoutAdmin);
+            
+            // إعداد تغيير نوع الاختبار
+            document.getElementById("testType").addEventListener("change", updateTestFormFields);
+        });
+
+        // ========== الدوال الرئيسية ==========
+        async function fetchStudentData() {
+            const response = await fetch('data.json');
+            if (!response.ok) {
+                throw new Error('Failed to fetch data');
+            }
+            return await response.json();
+        }
+
+        async function loadAdminData() {
+            try {
+                const data = await fetchStudentData();
+                const students = data.students;
+                
+                // عرض الإحصائيات
+                document.getElementById("totalStudents").textContent = students.length;
+                document.getElementById("advancedStudents").textContent = students.filter(s => s.level === "متقدم").length;
+                
+                // حساب عدد الاختبارات
+                const totalTests = students.reduce((total, student) => {
+                    return total + 
+                           (student.quranTests?.length || 0) + 
+                           (student.tajweedTests?.length || 0) + 
+                           (student.lessonTests?.length || 0);
+                }, 0);
+                document.getElementById("monthlyTests").textContent = totalTests;
+                
+                // حساب متوسط التقدم
+                const avgProgress = students.reduce((sum, student) => sum + (student.progress || 0), 0) / students.length;
+                document.getElementById("avgProgress").textContent = `${Math.round(avgProgress)}%`;
+                
+                // تحميل قائمة الطلاب
+                loadStudentsList(students);
+                
+                // تحميل قائمة الاختبارات
+                loadTestsLists(students);
+                
+                // تحديث قائمة الطلاب في التقارير
+                updateReportStudentsList(students);
+                
+            } catch (error) {
+                console.error("Error loading data:", error);
+                alert("حدث خطأ في تحميل البيانات. يرجى المحاولة لاحقاً.");
+            }
+        }
+
+        function setupAdminNavigation() {
+            const navLinks = document.querySelectorAll(".admin-nav a[data-section]");
+            
+            navLinks.forEach(link => {
+                link.addEventListener("click", function(e) {
+                    e.preventDefault();
+                    
+                    // إزالة النشط من جميع الروابط
+                    navLinks.forEach(l => l.classList.remove("active"));
+                    
+                    // إضافة النشط للرابط المحدد
+                    this.classList.add("active");
+                    
+                    // إخفاء جميع الأقسام
+                    document.querySelectorAll(".admin-section").forEach(section => {
+                        section.classList.remove("active");
+                    });
+                    
+                    // عرض القسم المحدد
+                    const sectionId = this.getAttribute("data-section");
+                    document.getElementById(sectionId).classList.add("active");
+                });
+            });
+        }
+
+        function setupAdminForms() {
+            // نموذج إضافة طالب
+            document.getElementById("addStudentForm").addEventListener("submit", function(e) {
+                e.preventDefault();
+                
+                const studentData = {
+                    name: document.getElementById("studentName").value,
+                    id: document.getElementById("studentId").value,
+                    level: document.getElementById("studentLevel").value,
+                    image: document.getElementById("studentImage").value || "default.jpg",
+                    progress: 0,
+                    quranTests: [],
+                    tajweedTests: [],
+                    lessonTests: []
+                };
+                
+                // هنا سيتم إرسال البيانات للخادم
+                console.log("بيانات الطالب الجديد:", studentData);
+                alert("تمت إضافة الطالب بنجاح!");
+                this.reset();
+                
+                // في تطبيق حقيقي، نعيد تحميل البيانات من الخادم
+                loadAdminData();
+            });
+            
+            // نموذج إضافة اختبار
+            document.getElementById("addTestForm").addEventListener("submit", function(e) {
+                e.preventDefault();
+                
+                const testType = document.getElementById("testType").value;
+                let testData = {};
+                
+                if (testType === "quran") {
+                    testData = {
+                        part: document.getElementById("quranPart").value,
+                        memorization: document.getElementById("memorizationScore").value + "%",
+                        recitation: document.getElementById("recitationScore").value + "%",
+                        date: document.getElementById("testDate").value,
+                        studentId: document.getElementById("testStudent").value,
+                        details: {
+                            notes: document.getElementById("testNotes").value
+                        }
+                    };
+                } else if (testType === "tajweed") {
+                    testData = {
+                        test: document.getElementById("tajweedTest").value,
+                        result: document.getElementById("tajweedScore").value + "%",
+                        evaluation: document.getElementById("tajweedEvaluation").value,
+                        date: document.getElementById("testDate").value,
+                        studentId: document.getElementById("testStudent").value
+                    };
+                } else {
+                    testData = {
+                        lesson: document.getElementById("lessonName").value,
+                        result: document.getElementById("lessonScore").value + "%",
+                        evaluation: document.getElementById("lessonEvaluation").value,
+                        date: document.getElementById("testDate").value,
+                        studentId: document.getElementById("testStudent").value
+                    };
+                }
+                
+                // هنا سيتم إرسال البيانات للخادم
+                console.log(`بيانات اختبار ${testType} الجديد:`, testData);
+                alert("تمت إضافة الاختبار بنجاح!");
+                this.reset();
+                
+                // في تطبيق حقيقي، نعيد تحميل البيانات من الخادم
+                loadAdminData();
+            });
+            
+            // زر إنشاء التقرير
+            document.getElementById("generateReport").addEventListener("click", function() {
+                const studentId = document.getElementById("reportStudent").value;
+                const reportType = document.getElementById("reportType").value;
+                
+                // هنا سيتم إنشاء التقرير
+                console.log(`إنشاء تقرير ${reportType} للطالب ${studentId || "جميع الطلاب"}`);
+                
+                // عرض معاينة التقرير
+                showReportPreview(studentId, reportType);
+            });
+        }
+
+        function updateTestFormFields() {
+            const testType = document.getElementById("testType").value;
+            const container = document.getElementById("testDetailsContainer");
+            
+            let html = '';
+            
+            // حقول مشتركة
+            html += `
+                <div class="form-group">
+                    <label for="testStudent">الطالب</label>
+                    <select id="testStudent" class="form-control" required>
+                        <option value="">اختر الطالب</option>
+            `;
+            
+            // ملء خيارات الطلاب
+            fetchStudentData().then(data => {
+                data.students.forEach(student => {
+                    html += `<option value="${student.id}">${student.name}</option>`;
+                });
+                
+                html += `</select></div>`;
+                
+                // حقول التاريخ
+                html += `
+                    <div class="form-group">
+                        <label for="testDate">تاريخ الاختبار</label>
+                        <input type="date" id="testDate" class="form-control" required>
+                    </div>
+                `;
+                
+                // حقول خاصة بنوع الاختبار
+                if (testType === "quran") {
+                    html += `
+                        <div class="form-group">
+                            <label for="quranPart">جزء القرآن</label>
+                            <input type="text" id="quranPart" class="form-control" placeholder="مثال: جزء عم" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="memorizationScore">درجة الحفظ (0-100)</label>
+                            <input type="number" id="memorizationScore" class="form-control" min="0" max="100" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="recitationScore">درجة التلاوة (0-100)</label>
+                            <input type="number" id="recitationScore" class="form-control" min="0" max="100" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="testNotes">ملاحظات المعلم</label>
+                            <textarea id="testNotes" class="form-control" rows="3"></textarea>
+                        </div>
+                    `;
+                } else if (testType === "tajweed") {
+                    html += `
+                        <div class="form-group">
+                            <label for="tajweedTest">اسم اختبار التجويد</label>
+                            <input type="text" id="tajweedTest" class="form-control" placeholder="مثال: أحكام النون الساكنة" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="tajweedScore">النتيجة (0-100)</label>
+                            <input type="number" id="tajweedScore" class="form-control" min="0" max="100" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="tajweedEvaluation">تقييم الأداء</label>
+                            <textarea id="tajweedEvaluation" class="form-control" rows="3" required></textarea>
+                        </div>
+                    `;
+                } else {
+                    html += `
+                        <div class="form-group">
+                            <label for="lessonName">اسم الدرس</label>
+                            <input type="text" id="lessonName" class="form-control" placeholder="مثال: أحكام المدود" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="lessonScore">النتيجة (0-100)</label>
+                            <input type="number" id="lessonScore" class="form-control" min="0" max="100" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="lessonEvaluation">تقييم الأداء</label>
+                            <textarea id="lessonEvaluation" class="form-control" rows="3" required></textarea>
+                        </div>
+                    `;
+                }
+                
+                container.innerHTML = html;
+            });
+        }
+
+        function loadStudentsList(students) {
+            const tbody = document.getElementById("studentsList");
+            tbody.innerHTML = "";
+            
+            students.forEach((student, index) => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td><img src="${student.image}" alt="${student.name}" width="40" height="40" style="border-radius:50%"></td>
+                    <td>${student.name}</td>
+                    <td>${student.id}</td>
+                    <td>${student.level}</td>
+                    <td>
+                        <div class="progress-bar" style="width:100%; height:10px; background:#eee">
+                            <div style="width:${student.progress}%; height:100%; background:var(--primary-color)"></div>
+                        </div>
+                        <small>${student.progress}%</small>
+                    </td>
+                    <td class="actions">
+                        <button class="btn btn-primary btn-sm"><i class="fas fa-edit"></i></button>
+                        <button class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
+                        <button class="btn btn-primary btn-sm"><i class="fas fa-eye"></i></button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function loadTestsLists(students) {
+            // تجميع جميع الاختبارات
+            let quranTests = [];
+            let tajweedTests = [];
+            let lessonTests = [];
+            
+            students.forEach(student => {
+                // اختبارات القرآن
+                if (student.quranTests) {
+                    student.quranTests.forEach(test => {
+                        quranTests.push({
+                            ...test,
+                            studentName: student.name,
+                            studentId: student.id
+                        });
+                    });
+                }
+                
+                // اختبارات التجويد
+                if (student.tajweedTests) {
+                    student.tajweedTests.forEach(test => {
+                        tajweedTests.push({
+                            ...test,
+                            studentName: student.name,
+                            studentId: student.id
+                        });
+                    });
+                }
+                
+                // اختبارات الدروس
+                if (student.lessonTests) {
+                    student.lessonTests.forEach(test => {
+                        lessonTests.push({
+                            ...test,
+                            studentName: student.name,
+                            studentId: student.id
+                        });
+                    });
+                }
+            });
+            
+            // ملء اختبارات القرآن
+            const quranTbody = document.getElementById("quranTestsList");
+            quranTbody.innerHTML = "";
+            quranTests.forEach(test => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${test.part}</td>
+                    <td><span class="score-badge ${getScoreClass(parseInt(test.memorization))}">${test.memorization}</span></td>
+                    <td><span class="score-badge ${getScoreClass(parseInt(test.recitation))}">${test.recitation}</span></td>
+                    <td>${test.date}</td>
+                    <td>${test.studentName}</td>
+                    <td class="actions">
+                        <button class="btn btn-primary btn-sm"><i class="fas fa-edit"></i></button>
+                        <button class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
+                    </td>
+                `;
+                quranTbody.appendChild(row);
+            });
+            
+            // ملء اختبارات التجويد
+            const tajweedTbody = document.getElementById("tajweedTestsList");
+            tajweedTbody.innerHTML = "";
+            tajweedTests.forEach(test => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${test.test}</td>
+                    <td><span class="score-badge ${getScoreClass(parseInt(test.result))}">${test.result}</span></td>
+                    <td>${test.evaluation}</td>
+                    <td>${test.date}</td>
+                    <td>${test.studentName}</td>
+                    <td class="actions">
+                        <button class="btn btn-primary btn-sm"><i class="fas fa-edit"></i></button>
+                        <button class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
+                    </td>
+                `;
+                tajweedTbody.appendChild(row);
+            });
+            
+            // ملء اختبارات الدروس
+            const lessonTbody = document.getElementById("lessonTestsList");
+            lessonTbody.innerHTML = "";
+            lessonTests.forEach(test => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${test.lesson}</td>
+                    <td><span class="score-badge ${getScoreClass(parseInt(test.result))}">${test.result}</span></td>
+                    <td>${test.evaluation}</td>
+                    <td>${test.date}</td>
+                    <td>${test.studentName}</td>
+                    <td class="actions">
+                        <button class="btn btn-primary btn-sm"><i class="fas fa-edit"></i></button>
+                        <button class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
+                    </td>
+                `;
+                lessonTbody.appendChild(row);
+            });
+        }
+
+        function updateReportStudentsList(students) {
+            const reportSelect = document.getElementById("reportStudent");
+            reportSelect.innerHTML = '<option value="">جميع الطلاب</option>';
+            students.forEach(student => {
+                const option = document.createElement("option");
+                option.value = student.id;
+                option.textContent = student.name;
+                reportSelect.appendChild(option);
+            });
+        }
+
+        function showReportPreview(studentId, reportType) {
+            const preview = document.getElementById("reportPreview");
+            
+            if (reportType === "progress") {
+                preview.innerHTML = `
+                    <div class="card">
+                        <h4>تقرير التقدم الدراسي</h4>
+                        ${studentId ? `<p>لطالب معين</p>` : `<p>لجميع الطلاب</p>`}
+                        <div id="progressChart"></div>
+                        <p>سيتم هنا عرض رسم بياني يوضح تقدم الطالب/الطلاب</p>
+                    </div>
+                `;
+            } else if (reportType === "tests") {
+                preview.innerHTML = `
+                    <div class="card">
+                        <h4>تقرير الاختبارات</h4>
+                        ${studentId ? `<p>لطالب معين</p>` : `<p>لجميع الطلاب</p>`}
+                        <div id="testsChart"></div>
+                        <p>سيتم هنا عرض جدول يلخص نتائج الاختبارات</p>
+                    </div>
+                `;
+            } else {
+                preview.innerHTML = `
+                    <div class="card">
+                        <h4>تقرير الأداء العام</h4>
+                        ${studentId ? `<p>لطالب معين</p>` : `<p>لجميع الطلاب</p>`}
+                        <div id="performanceChart"></div>
+                        <p>سيتم هنا عرض تحليل شامل لأداء الطالب/الطلاب</p>
+                    </div>
+                `;
+            }
+        }
+
+        function getScoreClass(score) {
+            if (score >= 90) return "excellent";
+            if (score >= 80) return "very-good";
+            if (score >= 70) return "good";
+            return "weak";
+        }
+
+        function logoutAdmin() {
+            // هنا سيتم إجراء تسجيل الخروج
+            localStorage.removeItem("adminToken");
+            window.location.href = "index.html";
+        }
+    </script>
 </body>
 </html>
