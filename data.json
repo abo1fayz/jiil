@@ -1,0 +1,109 @@
+{
+    "students": [
+        {
+            "id": "12345",
+            "name": "محمد أحمد",
+            "image": "https://randomuser.me/api/portraits/men/32.jpg",
+            "level": "متوسط",
+            "progress": 65,
+            "quranTests": [
+                {
+                    "part": "الجزء الأول",
+                    "memorization": "90%",
+                    "recitation": "85%",
+                    "date": "2025-01-10",
+                    "details": {
+                        "memorizationAccuracy": "92%",
+                        "tajweedMistakes": 3,
+                        "notes": "جيد جداً مع بعض الأخطاء في المدود"
+                    }
+                },
+                {
+                    "part": "الجزء الثاني",
+                    "memorization": "85%",
+                    "recitation": "80%",
+                    "date": "2025-02-15",
+                    "details": {
+                        "memorizationAccuracy": "87%",
+                        "tajweedMistakes": 5,
+                        "notes": "يحتاج تحسين في أحكام الراء"
+                    }
+                }
+            ],
+            "tajweedTests": [
+                {
+                    "test": "أحكام النون الساكنة",
+                    "result": "95%",
+                    "evaluation": "ممتاز",
+                    "date": "2025-03-01",
+                    "details": {
+                        "idgham": "100%",
+                        "ikhfa": "90%",
+                        "iqlab": "95%",
+                        "notes": "أداء ممتاز في جميع الأحكام"
+                    }
+                }
+            ],
+            "lessonTests": [
+                {
+                    "lesson": "تفسير سورة الفاتحة",
+                    "result": "92%",
+                    "evaluation": "ممتاز",
+                    "date": "2025-01-20",
+                    "details": {
+                        "understanding": "95%",
+                        "application": "90%",
+                        "notes": "فهم ممتاز للمفاهيم الأساسية"
+                    }
+                }
+            ]
+        },
+        {
+            "id": "67890",
+            "name": "علي حسن",
+            "image": "https://randomuser.me/api/portraits/men/44.jpg",
+            "level": "مبتدئ",
+            "progress": 35,
+            "quranTests": [
+                {
+                    "part": "الجزء الأول",
+                    "memorization": "80%",
+                    "recitation": "75%",
+                    "date": "2025-01-12",
+                    "details": {
+                        "memorizationAccuracy": "82%",
+                        "tajweedMistakes": 8,
+                        "notes": "يحتاج تكرار التسميع لتحسين الحفظ"
+                    }
+                }
+            ],
+            "tajweedTests": [
+                {
+                    "test": "أحكام النون الساكنة",
+                    "result": "85%",
+                    "evaluation": "جيد",
+                    "date": "2025-03-05",
+                    "details": {
+                        "idgham": "80%",
+                        "ikhfa": "85%",
+                        "iqlab": "90%",
+                        "notes": "يحتاج تدريب أكثر على الإخفاء"
+                    }
+                }
+            ],
+            "lessonTests": [
+                {
+                    "lesson": "تفسير سورة الفاتحة",
+                    "result": "90%",
+                    "evaluation": "ممتاز",
+                    "date": "2025-01-25",
+                    "details": {
+                        "understanding": "92%",
+                        "application": "88%",
+                        "notes": "فهم جيد للمفاهيم الأساسية"
+                    }
+                }
+            ]
+        }
+    ]
+}

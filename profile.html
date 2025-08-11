@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>معهد القرآن - الملف الشخصي</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <i class="fas fa-quran"></i>
+                <h1>معهد القرآن الكريم</h1>
+            </div>
+        </div>
+    </header>
+    
+    <div class="container">
+        <div class="profile-header">
+            <div class="profile-image">
+                <img id="studentImage" src="" alt="صورة الطالب">
+                <div class="profile-level">
+                    المستوى: <span id="studentLevel"></span>
+                </div>
+            </div>
+            <div class="profile-info">
+                <h2 id="studentName"></h2>
+                <div class="progress-container">
+                    <div class="progress-bar" id="progressBar"></div>
+                    <span class="progress-text" id="progressText">0%</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="quran-tests">أجزاء القرآن</button>
+            <button class="tab-btn" data-tab="tajweed-tests">التجويد</button>
+            <button class="tab-btn" data-tab="lesson-tests">الدروس</button>
+        </div>
+        
+        <div class="tab-content active" id="quran-tests">
+            <h3><i class="fas fa-book-quran"></i> أجزاء القرآن المختبرة</h3>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>الجزء</th>
+                            <th>الحفظ</th>
+                            <th>التلاوة</th>
+                            <th>التاريخ</th>
+                            <th>التفاصيل</th>
+                        </tr>
+                    </thead>
+                    <tbody id="quranTests"></tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="tajweed-tests">
+            <h3><i class="fas fa-microphone-alt"></i> اختبارات التجويد</h3>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>الاختبار</th>
+                            <th>النتيجة</th>
+                            <th>التقييم</th>
+                            <th>التاريخ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tajweedTests"></tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div class="tab-content" id="lesson-tests">
+            <h3><i class="fas fa-graduation-cap"></i> اختبارات الدروس</h3>
+            <div class="table-responsive">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>الدرس</th>
+                            <th>النتيجة</th>
+                            <th>التقييم</th>
+                            <th>التاريخ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="lessonTests"></tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div class="actions">
+            <button class="btn logout" onclick="window.location.href='index.html'">
+                <i class="fas fa-sign-out-alt"></i> تسجيل الخروج
+            </button>
+        </div>
+    </div>
+    
+    <footer>
+        <div class="container">
+            <p>جميع الحقوق محفوظة &copy; معهد القرآن الكريم 2023</p>
+        </div>
+    </footer>
+    
+    <script src="script.js"></script>
+</body>
+</html>
