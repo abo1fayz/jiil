@@ -289,6 +289,57 @@
             display: block;
         }
 
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 20px;
+            border-radius: 8px;
+            width: 80%;
+            max-width: 600px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.2);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h3 {
+            color: var(--primary-color);
+            margin: 0;
+        }
+
+        .close-modal {
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--dark-color);
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+            border-top: 1px solid #eee;
+            padding-top: 20px;
+        }
+
         /* Responsive */
         @media (max-width: 768px) {
             .admin-nav {
@@ -303,11 +354,20 @@
             .stats-grid {
                 grid-template-columns: 1fr 1fr;
             }
+            
+            .modal-content {
+                width: 95%;
+                margin: 10% auto;
+            }
         }
 
         @media (max-width: 480px) {
             .stats-grid {
                 grid-template-columns: 1fr;
+            }
+            
+            .modal-content {
+                padding: 15px;
             }
         }
     </style>
@@ -531,7 +591,69 @@
         </section>
     </div>
     
+    <!-- Modal for Edit Student -->
+    <div id="editStudentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-user-edit"></i> تعديل بيانات الطالب</h3>
+                <span class="close-modal">&times;</span>
+            </div>
+            <form id="editStudentForm">
+                <input type="hidden" id="editStudentId">
+                <div class="form-group">
+                    <label for="editStudentName">اسم الطالب</label>
+                    <input type="text" id="editStudentName" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="editStudentLevel">المستوى</label>
+                    <select id="editStudentLevel" class="form-control" required>
+                        <option value="مبتدئ">مبتدئ</option>
+                        <option value="متوسط">متوسط</option>
+                        <option value="متقدم">متقدم</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="editStudentImage">رابط الصورة</label>
+                    <input type="text" id="editStudentImage" class="form-control" placeholder="https://example.com/image.jpg">
+                </div>
+                <div class="form-group">
+                    <label for="editStudentProgress">التقدم (%)</label>
+                    <input type="number" id="editStudentProgress" class="form-control" min="0" max="100" required>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" id="deleteStudentBtn">حذف الطالب</button>
+                    <button type="submit" class="btn btn-primary">حفظ التعديلات</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal for Edit Test -->
+    <div id="editTestModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-edit"></i> تعديل بيانات الاختبار</h3>
+                <span class="close-modal">&times;</span>
+            </div>
+            <form id="editTestForm">
+                <input type="hidden" id="editTestType">
+                <input type="hidden" id="editTestId">
+                <input type="hidden" id="editTestStudentId">
+                <div id="editTestFields">
+                    <!-- سيتم ملؤها ديناميكياً حسب نوع الاختبار -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" id="deleteTestBtn">حذف الاختبار</button>
+                    <button type="submit" class="btn btn-primary">حفظ التعديلات</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script>
+        // المتغير العام لحفظ بيانات الطلاب
+        let studentsData = { students: [] };
+
         // ========== تهيئة الصفحة ==========
         document.addEventListener("DOMContentLoaded", function() {
             // تحميل البيانات عند بدء التشغيل
@@ -548,6 +670,9 @@
             
             // إعداد تغيير نوع الاختبار
             document.getElementById("testType").addEventListener("change", updateTestFormFields);
+            
+            // إعداد أحداث المودال
+            setupModalEvents();
         });
 
         // ========== الدوال الرئيسية ==========
@@ -556,7 +681,8 @@
             if (!response.ok) {
                 throw new Error('Failed to fetch data');
             }
-            return await response.json();
+            studentsData = await response.json();
+            return studentsData;
         }
 
         async function loadAdminData() {
@@ -637,12 +763,16 @@
                     lessonTests: []
                 };
                 
-                // هنا سيتم إرسال البيانات للخادم
-                console.log("بيانات الطالب الجديد:", studentData);
+                // إضافة الطالب إلى البيانات
+                studentsData.students.push(studentData);
+                
+                // حفظ البيانات (في تطبيق حقيقي سيتم إرسالها للخادم)
+                saveData();
+                
                 alert("تمت إضافة الطالب بنجاح!");
                 this.reset();
                 
-                // في تطبيق حقيقي، نعيد تحميل البيانات من الخادم
+                // إعادة تحميل البيانات
                 loadAdminData();
             });
             
@@ -651,6 +781,7 @@
                 e.preventDefault();
                 
                 const testType = document.getElementById("testType").value;
+                const studentId = document.getElementById("testStudent").value;
                 let testData = {};
                 
                 if (testType === "quran") {
@@ -659,7 +790,6 @@
                         memorization: document.getElementById("memorizationScore").value + "%",
                         recitation: document.getElementById("recitationScore").value + "%",
                         date: document.getElementById("testDate").value,
-                        studentId: document.getElementById("testStudent").value,
                         details: {
                             notes: document.getElementById("testNotes").value
                         }
@@ -669,26 +799,79 @@
                         test: document.getElementById("tajweedTest").value,
                         result: document.getElementById("tajweedScore").value + "%",
                         evaluation: document.getElementById("tajweedEvaluation").value,
-                        date: document.getElementById("testDate").value,
-                        studentId: document.getElementById("testStudent").value
+                        date: document.getElementById("testDate").value
                     };
                 } else {
                     testData = {
                         lesson: document.getElementById("lessonName").value,
                         result: document.getElementById("lessonScore").value + "%",
                         evaluation: document.getElementById("lessonEvaluation").value,
-                        date: document.getElementById("testDate").value,
-                        studentId: document.getElementById("testStudent").value
+                        date: document.getElementById("testDate").value
                     };
                 }
                 
-                // هنا سيتم إرسال البيانات للخادم
-                console.log(`بيانات اختبار ${testType} الجديد:`, testData);
+                // إضافة الاختبار للطالب
+                const student = studentsData.students.find(s => s.id === studentId);
+                if (student) {
+                    if (testType === "quran") {
+                        if (!student.quranTests) student.quranTests = [];
+                        student.quranTests.push(testData);
+                    } else if (testType === "tajweed") {
+                        if (!student.tajweedTests) student.tajweedTests = [];
+                        student.tajweedTests.push(testData);
+                    } else {
+                        if (!student.lessonTests) student.lessonTests = [];
+                        student.lessonTests.push(testData);
+                    }
+                }
+                
+                // حفظ البيانات (في تطبيق حقيقي سيتم إرسالها للخادم)
+                saveData();
+                
                 alert("تمت إضافة الاختبار بنجاح!");
                 this.reset();
                 
-                // في تطبيق حقيقي، نعيد تحميل البيانات من الخادم
+                // إعادة تحميل البيانات
                 loadAdminData();
+            });
+            
+            // نموذج تعديل الطالب
+            document.getElementById("editStudentForm").addEventListener("submit", function(e) {
+                e.preventDefault();
+                
+                const studentId = document.getElementById("editStudentId").value;
+                const student = studentsData.students.find(s => s.id === studentId);
+                
+                if (student) {
+                    student.name = document.getElementById("editStudentName").value;
+                    student.level = document.getElementById("editStudentLevel").value;
+                    student.image = document.getElementById("editStudentImage").value;
+                    student.progress = parseInt(document.getElementById("editStudentProgress").value);
+                    
+                    // حفظ البيانات
+                    saveData();
+                    
+                    alert("تم تحديث بيانات الطالب بنجاح!");
+                    closeModal('editStudentModal');
+                    loadAdminData();
+                }
+            });
+            
+            // زر حذف الطالب
+            document.getElementById("deleteStudentBtn").addEventListener("click", function() {
+                if (confirm("هل أنت متأكد من حذف هذا الطالب؟ لا يمكن التراجع عن هذه العملية.")) {
+                    const studentId = document.getElementById("editStudentId").value;
+                    
+                    // حذف الطالب من البيانات
+                    studentsData.students = studentsData.students.filter(s => s.id !== studentId);
+                    
+                    // حفظ البيانات
+                    saveData();
+                    
+                    alert("تم حذف الطالب بنجاح!");
+                    closeModal('editStudentModal');
+                    loadAdminData();
+                }
             });
             
             // زر إنشاء التقرير
@@ -701,6 +884,104 @@
                 
                 // عرض معاينة التقرير
                 showReportPreview(studentId, reportType);
+            });
+        }
+
+        function setupModalEvents() {
+            // إغلاق المودال عند النقر على X
+            document.querySelectorAll('.close-modal').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const modal = this.closest('.modal');
+                    modal.style.display = 'none';
+                });
+            });
+            
+            // إغلاق المودال عند النقر خارج المحتوى
+            window.addEventListener('click', function(e) {
+                if (e.target.classList.contains('modal')) {
+                    e.target.style.display = 'none';
+                }
+            });
+            
+            // إعداد نموذج تعديل الاختبار
+            document.getElementById("editTestForm").addEventListener("submit", function(e) {
+                e.preventDefault();
+                
+                const testType = document.getElementById("editTestType").value;
+                const testId = document.getElementById("editTestId").value;
+                const studentId = document.getElementById("editTestStudentId").value;
+                
+                const student = studentsData.students.find(s => s.id === studentId);
+                if (!student) return;
+                
+                let testArray, testIndex;
+                
+                if (testType === "quran") {
+                    testArray = student.quranTests;
+                    testIndex = testArray.findIndex(t => t.part === testId);
+                    
+                    if (testIndex !== -1) {
+                        testArray[testIndex].part = document.getElementById("editQuranPart").value;
+                        testArray[testIndex].memorization = document.getElementById("editMemorizationScore").value + "%";
+                        testArray[testIndex].recitation = document.getElementById("editRecitationScore").value + "%";
+                        testArray[testIndex].date = document.getElementById("editTestDate").value;
+                        testArray[testIndex].details.notes = document.getElementById("editTestNotes").value;
+                    }
+                } else if (testType === "tajweed") {
+                    testArray = student.tajweedTests;
+                    testIndex = testArray.findIndex(t => t.test === testId);
+                    
+                    if (testIndex !== -1) {
+                        testArray[testIndex].test = document.getElementById("editTajweedTest").value;
+                        testArray[testIndex].result = document.getElementById("editTajweedScore").value + "%";
+                        testArray[testIndex].evaluation = document.getElementById("editTajweedEvaluation").value;
+                        testArray[testIndex].date = document.getElementById("editTestDate").value;
+                    }
+                } else {
+                    testArray = student.lessonTests;
+                    testIndex = testArray.findIndex(t => t.lesson === testId);
+                    
+                    if (testIndex !== -1) {
+                        testArray[testIndex].lesson = document.getElementById("editLessonName").value;
+                        testArray[testIndex].result = document.getElementById("editLessonScore").value + "%";
+                        testArray[testIndex].evaluation = document.getElementById("editLessonEvaluation").value;
+                        testArray[testIndex].date = document.getElementById("editTestDate").value;
+                    }
+                }
+                
+                // حفظ البيانات
+                saveData();
+                
+                alert("تم تحديث بيانات الاختبار بنجاح!");
+                closeModal('editTestModal');
+                loadAdminData();
+            });
+            
+            // زر حذف الاختبار
+            document.getElementById("deleteTestBtn").addEventListener("click", function() {
+                if (confirm("هل أنت متأكد من حذف هذا الاختبار؟ لا يمكن التراجع عن هذه العملية.")) {
+                    const testType = document.getElementById("editTestType").value;
+                    const testId = document.getElementById("editTestId").value;
+                    const studentId = document.getElementById("editTestStudentId").value;
+                    
+                    const student = studentsData.students.find(s => s.id === studentId);
+                    if (!student) return;
+                    
+                    if (testType === "quran") {
+                        student.quranTests = student.quranTests.filter(t => t.part !== testId);
+                    } else if (testType === "tajweed") {
+                        student.tajweedTests = student.tajweedTests.filter(t => t.test !== testId);
+                    } else {
+                        student.lessonTests = student.lessonTests.filter(t => t.lesson !== testId);
+                    }
+                    
+                    // حفظ البيانات
+                    saveData();
+                    
+                    alert("تم حذف الاختبار بنجاح!");
+                    closeModal('editTestModal');
+                    loadAdminData();
+                }
             });
         }
 
@@ -719,75 +1000,73 @@
             `;
             
             // ملء خيارات الطلاب
-            fetchStudentData().then(data => {
-                data.students.forEach(student => {
-                    html += `<option value="${student.id}">${student.name}</option>`;
-                });
-                
-                html += `</select></div>`;
-                
-                // حقول التاريخ
+            studentsData.students.forEach(student => {
+                html += `<option value="${student.id}">${student.name}</option>`;
+            });
+            
+            html += `</select></div>`;
+            
+            // حقول التاريخ
+            html += `
+                <div class="form-group">
+                    <label for="testDate">تاريخ الاختبار</label>
+                    <input type="date" id="testDate" class="form-control" required>
+                </div>
+            `;
+            
+            // حقول خاصة بنوع الاختبار
+            if (testType === "quran") {
                 html += `
                     <div class="form-group">
-                        <label for="testDate">تاريخ الاختبار</label>
-                        <input type="date" id="testDate" class="form-control" required>
+                        <label for="quranPart">جزء القرآن</label>
+                        <input type="text" id="quranPart" class="form-control" placeholder="مثال: جزء عم" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="memorizationScore">درجة الحفظ (0-100)</label>
+                        <input type="number" id="memorizationScore" class="form-control" min="0" max="100" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="recitationScore">درجة التلاوة (0-100)</label>
+                        <input type="number" id="recitationScore" class="form-control" min="0" max="100" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="testNotes">ملاحظات المعلم</label>
+                        <textarea id="testNotes" class="form-control" rows="3"></textarea>
                     </div>
                 `;
-                
-                // حقول خاصة بنوع الاختبار
-                if (testType === "quran") {
-                    html += `
-                        <div class="form-group">
-                            <label for="quranPart">جزء القرآن</label>
-                            <input type="text" id="quranPart" class="form-control" placeholder="مثال: جزء عم" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="memorizationScore">درجة الحفظ (0-100)</label>
-                            <input type="number" id="memorizationScore" class="form-control" min="0" max="100" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="recitationScore">درجة التلاوة (0-100)</label>
-                            <input type="number" id="recitationScore" class="form-control" min="0" max="100" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="testNotes">ملاحظات المعلم</label>
-                            <textarea id="testNotes" class="form-control" rows="3"></textarea>
-                        </div>
-                    `;
-                } else if (testType === "tajweed") {
-                    html += `
-                        <div class="form-group">
-                            <label for="tajweedTest">اسم اختبار التجويد</label>
-                            <input type="text" id="tajweedTest" class="form-control" placeholder="مثال: أحكام النون الساكنة" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="tajweedScore">النتيجة (0-100)</label>
-                            <input type="number" id="tajweedScore" class="form-control" min="0" max="100" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="tajweedEvaluation">تقييم الأداء</label>
-                            <textarea id="tajweedEvaluation" class="form-control" rows="3" required></textarea>
-                        </div>
-                    `;
-                } else {
-                    html += `
-                        <div class="form-group">
-                            <label for="lessonName">اسم الدرس</label>
-                            <input type="text" id="lessonName" class="form-control" placeholder="مثال: أحكام المدود" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="lessonScore">النتيجة (0-100)</label>
-                            <input type="number" id="lessonScore" class="form-control" min="0" max="100" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="lessonEvaluation">تقييم الأداء</label>
-                            <textarea id="lessonEvaluation" class="form-control" rows="3" required></textarea>
-                        </div>
-                    `;
-                }
-                
-                container.innerHTML = html;
-            });
+            } else if (testType === "tajweed") {
+                html += `
+                    <div class="form-group">
+                        <label for="tajweedTest">اسم اختبار التجويد</label>
+                        <input type="text" id="tajweedTest" class="form-control" placeholder="مثال: أحكام النون الساكنة" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="tajweedScore">النتيجة (0-100)</label>
+                        <input type="number" id="tajweedScore" class="form-control" min="0" max="100" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="tajweedEvaluation">تقييم الأداء</label>
+                        <textarea id="tajweedEvaluation" class="form-control" rows="3" required></textarea>
+                    </div>
+                `;
+            } else {
+                html += `
+                    <div class="form-group">
+                        <label for="lessonName">اسم الدرس</label>
+                        <input type="text" id="lessonName" class="form-control" placeholder="مثال: أحكام المدود" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="lessonScore">النتيجة (0-100)</label>
+                        <input type="number" id="lessonScore" class="form-control" min="0" max="100" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="lessonEvaluation">تقييم الأداء</label>
+                        <textarea id="lessonEvaluation" class="form-control" rows="3" required></textarea>
+                    </div>
+                `;
+            }
+            
+            container.innerHTML = html;
         }
 
         function loadStudentsList(students) {
@@ -809,12 +1088,29 @@
                         <small>${student.progress}%</small>
                     </td>
                     <td class="actions">
-                        <button class="btn btn-primary btn-sm"><i class="fas fa-edit"></i></button>
-                        <button class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
-                        <button class="btn btn-primary btn-sm"><i class="fas fa-eye"></i></button>
+                        <button class="btn btn-primary btn-sm edit-student" data-id="${student.id}"><i class="fas fa-edit"></i></button>
+                        <button class="btn btn-danger btn-sm delete-student" data-id="${student.id}"><i class="fas fa-trash"></i></button>
+                        <button class="btn btn-primary btn-sm view-student" data-id="${student.id}"><i class="fas fa-eye"></i></button>
                     </td>
                 `;
                 tbody.appendChild(row);
+            });
+            
+            // إضافة أحداث لأزرار التعديل والحذف
+            document.querySelectorAll('.edit-student').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const studentId = this.getAttribute('data-id');
+                    openEditStudentModal(studentId);
+                });
+            });
+            
+            document.querySelectorAll('.delete-student').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const studentId = this.getAttribute('data-id');
+                    if (confirm(`هل أنت متأكد من حذف الطالب رقم ${studentId}؟`)) {
+                        deleteStudent(studentId);
+                    }
+                });
             });
         }
 
@@ -871,8 +1167,8 @@
                     <td>${test.date}</td>
                     <td>${test.studentName}</td>
                     <td class="actions">
-                        <button class="btn btn-primary btn-sm"><i class="fas fa-edit"></i></button>
-                        <button class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
+                        <button class="btn btn-primary btn-sm edit-test" data-type="quran" data-id="${test.part}" data-student="${test.studentId}"><i class="fas fa-edit"></i></button>
+                        <button class="btn btn-danger btn-sm delete-test" data-type="quran" data-id="${test.part}" data-student="${test.studentId}"><i class="fas fa-trash"></i></button>
                     </td>
                 `;
                 quranTbody.appendChild(row);
@@ -890,8 +1186,8 @@
                     <td>${test.date}</td>
                     <td>${test.studentName}</td>
                     <td class="actions">
-                        <button class="btn btn-primary btn-sm"><i class="fas fa-edit"></i></button>
-                        <button class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
+                        <button class="btn btn-primary btn-sm edit-test" data-type="tajweed" data-id="${test.test}" data-student="${test.studentId}"><i class="fas fa-edit"></i></button>
+                        <button class="btn btn-danger btn-sm delete-test" data-type="tajweed" data-id="${test.test}" data-student="${test.studentId}"><i class="fas fa-trash"></i></button>
                     </td>
                 `;
                 tajweedTbody.appendChild(row);
@@ -909,11 +1205,33 @@
                     <td>${test.date}</td>
                     <td>${test.studentName}</td>
                     <td class="actions">
-                        <button class="btn btn-primary btn-sm"><i class="fas fa-edit"></i></button>
-                        <button class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
+                        <button class="btn btn-primary btn-sm edit-test" data-type="lesson" data-id="${test.lesson}" data-student="${test.studentId}"><i class="fas fa-edit"></i></button>
+                        <button class="btn btn-danger btn-sm delete-test" data-type="lesson" data-id="${test.lesson}" data-student="${test.studentId}"><i class="fas fa-trash"></i></button>
                     </td>
                 `;
                 lessonTbody.appendChild(row);
+            });
+            
+            // إضافة أحداث لأزرار التعديل والحذف للاختبارات
+            document.querySelectorAll('.edit-test').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const testType = this.getAttribute('data-type');
+                    const testId = this.getAttribute('data-id');
+                    const studentId = this.getAttribute('data-student');
+                    openEditTestModal(testType, testId, studentId);
+                });
+            });
+            
+            document.querySelectorAll('.delete-test').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const testType = this.getAttribute('data-type');
+                    const testId = this.getAttribute('data-id');
+                    const studentId = this.getAttribute('data-student');
+                    
+                    if (confirm(`هل أنت متأكد من حذف هذا الاختبار؟`)) {
+                        deleteTest(testType, testId, studentId);
+                    }
+                });
             });
         }
 
@@ -961,6 +1279,143 @@
             }
         }
 
+        function openEditStudentModal(studentId) {
+            const student = studentsData.students.find(s => s.id === studentId);
+            if (!student) return;
+            
+            document.getElementById("editStudentId").value = student.id;
+            document.getElementById("editStudentName").value = student.name;
+            document.getElementById("editStudentLevel").value = student.level;
+            document.getElementById("editStudentImage").value = student.image;
+            document.getElementById("editStudentProgress").value = student.progress;
+            
+            document.getElementById("editStudentModal").style.display = "block";
+        }
+
+        function openEditTestModal(testType, testId, studentId) {
+            const student = studentsData.students.find(s => s.id === studentId);
+            if (!student) return;
+            
+            let test, testArray;
+            
+            if (testType === "quran") {
+                testArray = student.quranTests;
+                test = testArray.find(t => t.part === testId);
+            } else if (testType === "tajweed") {
+                testArray = student.tajweedTests;
+                test = testArray.find(t => t.test === testId);
+            } else {
+                testArray = student.lessonTests;
+                test = testArray.find(t => t.lesson === testId);
+            }
+            
+            if (!test) return;
+            
+            document.getElementById("editTestType").value = testType;
+            document.getElementById("editTestId").value = testId;
+            document.getElementById("editTestStudentId").value = studentId;
+            
+            let html = '';
+            
+            if (testType === "quran") {
+                html = `
+                    <div class="form-group">
+                        <label for="editQuranPart">جزء القرآن</label>
+                        <input type="text" id="editQuranPart" class="form-control" value="${test.part}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editMemorizationScore">درجة الحفظ (0-100)</label>
+                        <input type="number" id="editMemorizationScore" class="form-control" 
+                               value="${parseInt(test.memorization)}" min="0" max="100" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editRecitationScore">درجة التلاوة (0-100)</label>
+                        <input type="number" id="editRecitationScore" class="form-control" 
+                               value="${parseInt(test.recitation)}" min="0" max="100" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editTestDate">تاريخ الاختبار</label>
+                        <input type="date" id="editTestDate" class="form-control" value="${test.date}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editTestNotes">ملاحظات المعلم</label>
+                        <textarea id="editTestNotes" class="form-control" rows="3">${test.details?.notes || ''}</textarea>
+                    </div>
+                `;
+            } else if (testType === "tajweed") {
+                html = `
+                    <div class="form-group">
+                        <label for="editTajweedTest">اسم اختبار التجويد</label>
+                        <input type="text" id="editTajweedTest" class="form-control" value="${test.test}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editTajweedScore">النتيجة (0-100)</label>
+                        <input type="number" id="editTajweedScore" class="form-control" 
+                               value="${parseInt(test.result)}" min="0" max="100" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editTajweedEvaluation">تقييم الأداء</label>
+                        <textarea id="editTajweedEvaluation" class="form-control" rows="3" required>${test.evaluation}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="editTestDate">تاريخ الاختبار</label>
+                        <input type="date" id="editTestDate" class="form-control" value="${test.date}" required>
+                    </div>
+                `;
+            } else {
+                html = `
+                    <div class="form-group">
+                        <label for="editLessonName">اسم الدرس</label>
+                        <input type="text" id="editLessonName" class="form-control" value="${test.lesson}" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editLessonScore">النتيجة (0-100)</label>
+                        <input type="number" id="editLessonScore" class="form-control" 
+                               value="${parseInt(test.result)}" min="0" max="100" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editLessonEvaluation">تقييم الأداء</label>
+                        <textarea id="editLessonEvaluation" class="form-control" rows="3" required>${test.evaluation}</textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="editTestDate">تاريخ الاختبار</label>
+                        <input type="date" id="editTestDate" class="form-control" value="${test.date}" required>
+                    </div>
+                `;
+            }
+            
+            document.getElementById("editTestFields").innerHTML = html;
+            document.getElementById("editTestModal").style.display = "block";
+        }
+
+        function deleteStudent(studentId) {
+            studentsData.students = studentsData.students.filter(s => s.id !== studentId);
+            saveData();
+            alert("تم حذف الطالب بنجاح!");
+            loadAdminData();
+        }
+
+        function deleteTest(testType, testId, studentId) {
+            const student = studentsData.students.find(s => s.id === studentId);
+            if (!student) return;
+            
+            if (testType === "quran") {
+                student.quranTests = student.quranTests.filter(t => t.part !== testId);
+            } else if (testType === "tajweed") {
+                student.tajweedTests = student.tajweedTests.filter(t => t.test !== testId);
+            } else {
+                student.lessonTests = student.lessonTests.filter(t => t.lesson !== testId);
+            }
+            
+            saveData();
+            alert("تم حذف الاختبار بنجاح!");
+            loadAdminData();
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = "none";
+        }
+
         function getScoreClass(score) {
             if (score >= 90) return "excellent";
             if (score >= 80) return "very-good";
@@ -968,8 +1423,13 @@
             return "weak";
         }
 
+        function saveData() {
+            // في تطبيق حقيقي، هنا سيتم إرسال البيانات للخادم لحفظها
+            // لأغراض العرض، سنستخدم localStorage لتخزين البيانات مؤقتاً
+            localStorage.setItem('studentsData', JSON.stringify(studentsData));
+        }
+
         function logoutAdmin() {
-            // هنا سيتم إجراء تسجيل الخروج
             localStorage.removeItem("adminToken");
             window.location.href = "index.html";
         }
